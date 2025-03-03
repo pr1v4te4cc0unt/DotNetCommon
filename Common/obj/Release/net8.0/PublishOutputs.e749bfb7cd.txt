@@ -1,0 +1,3 @@
+C:\Users\arams\source\repos\Common\Common\bin\Release\net8.0\publish\Common.dll
+C:\Users\arams\source\repos\Common\Common\bin\Release\net8.0\publish\Common.deps.json
+C:\Users\arams\source\repos\Common\Common\bin\Release\net8.0\publish\Common.pdb

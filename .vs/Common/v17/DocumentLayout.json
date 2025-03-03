@@ -1,0 +1,218 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\arams\\Documents\\GitHubRepos\\DotNET\\Core\\DotNETCommon\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{C0313EF8-7679-48D1-A3B0-ED76DFB91BC9}|Common\\Common.csproj|c:\\users\\arams\\documents\\githubrepos\\dotnet\\core\\dotnetcommon\\common\\common.csproj||{04B8AB82-A572-4FEF-95CE-5222444B6B64}|",
+      "RelativeMoniker": "D:0:0:{C0313EF8-7679-48D1-A3B0-ED76DFB91BC9}|Common\\Common.csproj|solutionrelative:common\\common.csproj||{04B8AB82-A572-4FEF-95CE-5222444B6B64}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C0313EF8-7679-48D1-A3B0-ED76DFB91BC9}|Common\\Common.csproj|c:\\users\\arams\\documents\\githubrepos\\dotnet\\core\\dotnetcommon\\common\\encryption\\compositeencryptionhandler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C0313EF8-7679-48D1-A3B0-ED76DFB91BC9}|Common\\Common.csproj|solutionrelative:common\\encryption\\compositeencryptionhandler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C0313EF8-7679-48D1-A3B0-ED76DFB91BC9}|Common\\Common.csproj|c:\\users\\arams\\documents\\githubrepos\\dotnet\\core\\dotnetcommon\\common\\encryption\\encryptorfactory.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C0313EF8-7679-48D1-A3B0-ED76DFB91BC9}|Common\\Common.csproj|solutionrelative:common\\encryption\\encryptorfactory.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C0313EF8-7679-48D1-A3B0-ED76DFB91BC9}|Common\\Common.csproj|c:\\users\\arams\\documents\\githubrepos\\dotnet\\core\\dotnetcommon\\common\\encryption\\iencryptor.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C0313EF8-7679-48D1-A3B0-ED76DFB91BC9}|Common\\Common.csproj|solutionrelative:common\\encryption\\iencryptor.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C0313EF8-7679-48D1-A3B0-ED76DFB91BC9}|Common\\Common.csproj|c:\\users\\arams\\documents\\githubrepos\\dotnet\\core\\dotnetcommon\\common\\encryption\\encryptor.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C0313EF8-7679-48D1-A3B0-ED76DFB91BC9}|Common\\Common.csproj|solutionrelative:common\\encryption\\encryptor.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C0313EF8-7679-48D1-A3B0-ED76DFB91BC9}|Common\\Common.csproj|c:\\users\\arams\\documents\\githubrepos\\dotnet\\core\\dotnetcommon\\common\\encryption\\base64encryptor.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C0313EF8-7679-48D1-A3B0-ED76DFB91BC9}|Common\\Common.csproj|solutionrelative:common\\encryption\\base64encryptor.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C0313EF8-7679-48D1-A3B0-ED76DFB91BC9}|Common\\Common.csproj|c:\\users\\arams\\documents\\githubrepos\\dotnet\\core\\dotnetcommon\\common\\model\\product.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C0313EF8-7679-48D1-A3B0-ED76DFB91BC9}|Common\\Common.csproj|solutionrelative:common\\model\\product.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C0313EF8-7679-48D1-A3B0-ED76DFB91BC9}|Common\\Common.csproj|c:\\users\\arams\\documents\\githubrepos\\dotnet\\core\\dotnetcommon\\common\\model\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C0313EF8-7679-48D1-A3B0-ED76DFB91BC9}|Common\\Common.csproj|solutionrelative:common\\model\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C0313EF8-7679-48D1-A3B0-ED76DFB91BC9}|Common\\Common.csproj|c:\\users\\arams\\documents\\githubrepos\\dotnet\\core\\dotnetcommon\\common\\dao\\userdao.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C0313EF8-7679-48D1-A3B0-ED76DFB91BC9}|Common\\Common.csproj|solutionrelative:common\\dao\\userdao.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C0313EF8-7679-48D1-A3B0-ED76DFB91BC9}|Common\\Common.csproj|c:\\users\\arams\\documents\\githubrepos\\dotnet\\core\\dotnetcommon\\common\\encryption\\regexpattern.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C0313EF8-7679-48D1-A3B0-ED76DFB91BC9}|Common\\Common.csproj|solutionrelative:common\\encryption\\regexpattern.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C0313EF8-7679-48D1-A3B0-ED76DFB91BC9}|Common\\Common.csproj|c:\\users\\arams\\documents\\githubrepos\\dotnet\\core\\dotnetcommon\\common\\security\\regex.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C0313EF8-7679-48D1-A3B0-ED76DFB91BC9}|Common\\Common.csproj|solutionrelative:common\\security\\regex.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\arams\\Documents\\GitHubRepos\\DotNET\\Core\\DotNETCommon\\Common\\Dao\\ProductsDao.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Common\\Dao\\ProductsDao.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Common",
+              "DocumentMoniker": "C:\\Users\\arams\\Documents\\GitHubRepos\\DotNET\\Core\\DotNETCommon\\Common\\Common.csproj",
+              "RelativeDocumentMoniker": "Common\\Common.csproj",
+              "ToolTip": "C:\\Users\\arams\\Documents\\GitHubRepos\\DotNET\\Core\\DotNETCommon\\Common\\Common.csproj",
+              "RelativeToolTip": "Common\\Common.csproj",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2025-03-03T05:39:44.762Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "IEncryptor.cs",
+              "DocumentMoniker": "C:\\Users\\arams\\Documents\\GitHubRepos\\DotNET\\Core\\DotNETCommon\\Common\\Encryption\\IEncryptor.cs",
+              "RelativeDocumentMoniker": "Common\\Encryption\\IEncryptor.cs",
+              "ToolTip": "C:\\Users\\arams\\Documents\\GitHubRepos\\DotNET\\Core\\DotNETCommon\\Common\\Encryption\\IEncryptor.cs",
+              "RelativeToolTip": "Common\\Encryption\\IEncryptor.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAkAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-03-03T05:37:19.997Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "EncryptorFactory.cs",
+              "DocumentMoniker": "C:\\Users\\arams\\Documents\\GitHubRepos\\DotNET\\Core\\DotNETCommon\\Common\\Encryption\\EncryptorFactory.cs",
+              "RelativeDocumentMoniker": "Common\\Encryption\\EncryptorFactory.cs",
+              "ToolTip": "C:\\Users\\arams\\Documents\\GitHubRepos\\DotNET\\Core\\DotNETCommon\\Common\\Encryption\\EncryptorFactory.cs",
+              "RelativeToolTip": "Common\\Encryption\\EncryptorFactory.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAYAAAAYAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-03-03T05:37:10.624Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "Product.cs",
+              "DocumentMoniker": "C:\\Users\\arams\\Documents\\GitHubRepos\\DotNET\\Core\\DotNETCommon\\Common\\Model\\Product.cs",
+              "RelativeDocumentMoniker": "Common\\Model\\Product.cs",
+              "ToolTip": "C:\\Users\\arams\\Documents\\GitHubRepos\\DotNET\\Core\\DotNETCommon\\Common\\Model\\Product.cs",
+              "RelativeToolTip": "Common\\Model\\Product.cs",
+              "ViewState": "AQIAAAYAAAAAAAAAAAAAABwAAAAsAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-11-10T00:33:16.056Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "Regex.cs",
+              "DocumentMoniker": "C:\\Users\\arams\\Documents\\GitHubRepos\\DotNET\\Core\\DotNETCommon\\Common\\Security\\Regex.cs",
+              "RelativeDocumentMoniker": "Common\\Security\\Regex.cs",
+              "ToolTip": "C:\\Users\\arams\\Documents\\GitHubRepos\\DotNET\\Core\\DotNETCommon\\Common\\Security\\Regex.cs",
+              "RelativeToolTip": "Common\\Security\\Regex.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAoAAABpAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-11-04T23:43:19.326Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "RegexPattern.cs",
+              "DocumentMoniker": "C:\\Users\\arams\\Documents\\GitHubRepos\\DotNET\\Core\\DotNETCommon\\Common\\Encryption\\RegexPattern.cs",
+              "RelativeDocumentMoniker": "Common\\Encryption\\RegexPattern.cs",
+              "ToolTip": "C:\\Users\\arams\\Documents\\GitHubRepos\\DotNET\\Core\\DotNETCommon\\Common\\Encryption\\RegexPattern.cs",
+              "RelativeToolTip": "Common\\Encryption\\RegexPattern.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAMAAAAFAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-11-04T23:43:01.624Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "UserDao.cs",
+              "DocumentMoniker": "C:\\Users\\arams\\Documents\\GitHubRepos\\DotNET\\Core\\DotNETCommon\\Common\\Dao\\UserDao.cs",
+              "RelativeDocumentMoniker": "Common\\Dao\\UserDao.cs",
+              "ToolTip": "C:\\Users\\arams\\Documents\\GitHubRepos\\DotNET\\Core\\DotNETCommon\\Common\\Dao\\UserDao.cs",
+              "RelativeToolTip": "Common\\Dao\\UserDao.cs",
+              "ViewState": "AQIAAKYAAAAAAAAAAAAAAI4AAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-11-04T22:08:59.419Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "CompositeEncryptionHandler.cs",
+              "DocumentMoniker": "C:\\Users\\arams\\Documents\\GitHubRepos\\DotNET\\Core\\DotNETCommon\\Common\\Encryption\\CompositeEncryptionHandler.cs",
+              "RelativeDocumentMoniker": "Common\\Encryption\\CompositeEncryptionHandler.cs",
+              "ToolTip": "C:\\Users\\arams\\Documents\\GitHubRepos\\DotNET\\Core\\DotNETCommon\\Common\\Encryption\\CompositeEncryptionHandler.cs",
+              "RelativeToolTip": "Common\\Encryption\\CompositeEncryptionHandler.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAMAAAASAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-11-04T08:04:23.362Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "Encryptor.cs",
+              "DocumentMoniker": "C:\\Users\\arams\\Documents\\GitHubRepos\\DotNET\\Core\\DotNETCommon\\Common\\Encryption\\Encryptor.cs",
+              "RelativeDocumentMoniker": "Common\\Encryption\\Encryptor.cs",
+              "ToolTip": "C:\\Users\\arams\\Documents\\GitHubRepos\\DotNET\\Core\\DotNETCommon\\Common\\Encryption\\Encryptor.cs",
+              "RelativeToolTip": "Common\\Encryption\\Encryptor.cs",
+              "ViewState": "AQIAACoAAAAAAAAAAAAAABQAAAAIAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-11-04T07:52:22.418Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "Base64Encryptor.cs",
+              "DocumentMoniker": "C:\\Users\\arams\\Documents\\GitHubRepos\\DotNET\\Core\\DotNETCommon\\Common\\Encryption\\Base64Encryptor.cs",
+              "RelativeDocumentMoniker": "Common\\Encryption\\Base64Encryptor.cs",
+              "ToolTip": "C:\\Users\\arams\\Documents\\GitHubRepos\\DotNET\\Core\\DotNETCommon\\Common\\Encryption\\Base64Encryptor.cs",
+              "RelativeToolTip": "Common\\Encryption\\Base64Encryptor.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAABsAAAASAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-11-04T07:51:28.319Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "ProductsDao.cs",
+              "DocumentMoniker": "C:\\Users\\arams\\Documents\\GitHubRepos\\DotNET\\Core\\DotNETCommon\\Common\\Dao\\ProductsDao.cs",
+              "RelativeDocumentMoniker": "Common\\Dao\\ProductsDao.cs",
+              "ToolTip": "C:\\Users\\arams\\Documents\\GitHubRepos\\DotNET\\Core\\DotNETCommon\\Common\\Dao\\ProductsDao.cs",
+              "RelativeToolTip": "Common\\Dao\\ProductsDao.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAABcAAAAkAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-11-10T00:31:33.315Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "User.cs",
+              "DocumentMoniker": "C:\\Users\\arams\\Documents\\GitHubRepos\\DotNET\\Core\\DotNETCommon\\Common\\Model\\User.cs",
+              "RelativeDocumentMoniker": "Common\\Model\\User.cs",
+              "ToolTip": "C:\\Users\\arams\\Documents\\GitHubRepos\\DotNET\\Core\\DotNETCommon\\Common\\Model\\User.cs",
+              "RelativeToolTip": "Common\\Model\\User.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAABMAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-11-10T01:09:04.55Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
