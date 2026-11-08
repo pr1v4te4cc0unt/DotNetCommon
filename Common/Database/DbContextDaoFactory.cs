@@ -3,6 +3,7 @@ using Common.Database.Oracle;
 using Common.Database.Postgres;
 using Common.Database.Sql;
 using Common.EnumUtil;
+using Microsoft.Extensions.Logging;
 
 namespace Common.Database
 {
@@ -11,23 +12,23 @@ namespace Common.Database
     public static class DbContextDaoFactory
     {
         #region public
-        public static AbstractDbContextDao GetDbContextDao(DbContextDaoType dbContextDaoType)
+        public static IDbContextDaoSync GetDbContextDao(DbContextDaoType dbContextDaoType, ILoggerFactory loggerFactory, string connectionString)
         {
-            AbstractDbContextDao dbContextDao = null;
+            IDbContextDaoSync dbContextDao = null;
 
             switch (dbContextDaoType)
             {
                 case DbContextDaoType.SqlServer:
-                    dbContextDao = new SqlDbContextDao();
+                    dbContextDao = new SqlDbContextDao(loggerFactory, connectionString);
                     break;
                 case DbContextDaoType.Oracle:
-                    dbContextDao = new OracleDbContextDao();
+                    dbContextDao = new OracleDbContextDao(loggerFactory, connectionString);
                     break;
                 case DbContextDaoType.MySql:
-                    dbContextDao = new MySqlDbContextDao();
+                    dbContextDao = new MySqlDbContextDao(loggerFactory, connectionString);
                     break;
                 case DbContextDaoType.Postgres:
-                    dbContextDao = new PostgresDbContextDao();
+                    dbContextDao = new PostgresDbContextDao(loggerFactory, connectionString);
                     break;
                 default:
                     throw new NotImplementedException();
@@ -36,23 +37,23 @@ namespace Common.Database
             return dbContextDao;
         }
 
-        public static AbstractDbContextDao GetDbContextDao(DbContextDaoType dbContextDaoType, string connectionString)
+        public static IDbContextDaoSync GetDbContextDao(DbContextDaoType dbContextDaoType, ILoggerFactory loggerFactory, IConnectionStringProvider connectionStringProvider)
         {
-            AbstractDbContextDao dbContextDao = null;
+            IDbContextDaoSync dbContextDao = null;
 
             switch (dbContextDaoType)
             {
                 case DbContextDaoType.SqlServer:
-                    dbContextDao = new SqlDbContextDao(connectionString);
+                    dbContextDao = new SqlDbContextDao(loggerFactory, connectionStringProvider);
                     break;
                 case DbContextDaoType.Oracle:
-                    dbContextDao = new OracleDbContextDao(connectionString);
+                    dbContextDao = new OracleDbContextDao(loggerFactory, connectionStringProvider);
                     break;
                 case DbContextDaoType.MySql:
-                    dbContextDao = new MySqlDbContextDao(connectionString);
+                    dbContextDao = new MySqlDbContextDao(loggerFactory, connectionStringProvider);
                     break;
                 case DbContextDaoType.Postgres:
-                    dbContextDao = new PostgresDbContextDao(connectionString);
+                    dbContextDao = new PostgresDbContextDao(loggerFactory, connectionStringProvider);
                     break;
                 default:
                     throw new NotImplementedException();
@@ -61,50 +62,18 @@ namespace Common.Database
             return dbContextDao;
         }
 
-        public static AbstractDbContextDao GetDbContextDao(DbContextDaoType dbContextDaoType, IConnectionStringProvider connectionStringProvider)
-        {
-            AbstractDbContextDao dbContextDao = null;
-
-            switch (dbContextDaoType)
-            {
-                case DbContextDaoType.SqlServer:
-                    dbContextDao = new SqlDbContextDao(connectionStringProvider);
-                    break;
-                case DbContextDaoType.Oracle:
-                    dbContextDao = new OracleDbContextDao(connectionStringProvider);
-                    break;
-                case DbContextDaoType.MySql:
-                    dbContextDao = new MySqlDbContextDao(connectionStringProvider);
-                    break;
-                case DbContextDaoType.Postgres:
-                    dbContextDao = new PostgresDbContextDao(connectionStringProvider);
-                    break;
-                default:
-                    throw new NotImplementedException();
-            }
-
-            return dbContextDao;
-        }
-
-        public static AbstractDbContextDao GetDbContextDao(string dbContextDaoTypeString)
+        public static IDbContextDaoSync GetDbContextDao(string dbContextDaoTypeString, ILoggerFactory loggerFactory , string connectionString)
         {
             DbContextDaoType dbContextDaoType = EnumHelper.TryParse<DbContextDaoType>(dbContextDaoTypeString);
 
-            return GetDbContextDao(dbContextDaoType);
+            return GetDbContextDao(dbContextDaoType, loggerFactory, connectionString);
         }
 
-        public static AbstractDbContextDao GetDbContextDao(string dbContextDaoTypeString, string connectionString)
+        public static IDbContextDaoSync GetDbContextDao(string dbContextDaoTypeString, ILoggerFactory loggerFactory, IConnectionStringProvider connectionStringProvider)
         {
             DbContextDaoType dbContextDaoType = EnumHelper.TryParse<DbContextDaoType>(dbContextDaoTypeString);
 
-            return GetDbContextDao(dbContextDaoType, connectionString);
-        }
-
-        public static AbstractDbContextDao GetDbContextDao(string dbContextDaoTypeString, IConnectionStringProvider connectionStringProvider)
-        {
-            DbContextDaoType dbContextDaoType = EnumHelper.TryParse<DbContextDaoType>(dbContextDaoTypeString);
-
-            return GetDbContextDao(dbContextDaoType, connectionStringProvider);
+            return GetDbContextDao(dbContextDaoType, loggerFactory, connectionStringProvider);
         }
         #endregion
     }

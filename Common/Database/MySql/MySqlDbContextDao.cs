@@ -1,62 +1,55 @@
-﻿using System.Data;
-using System.Data.Common;
-using Common.Database.Postgres;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using MySql.Data.MySqlClient;
+using Npgsql;
+using System.Data;
+using System.Data.Common;
 
 namespace Common.Database.MySql
 {
-    public class MySqlDbContextDao : AbstractDbContextDao
+    public class MySqlDbContextDao : IDbContextDaoSync, IDbContextDaoCommand, IDbContextDaoParameter
     {
         #region prop
-        private ILogger Logger;
+        private readonly string ConnectionString;
+        private readonly ILogger Logger;
         #endregion
 
         #region ctor
-        public MySqlDbContextDao() : base()
+        public MySqlDbContextDao(ILoggerFactory loggerFactory, string connectionString)
         {
-            ILoggerFactory factory = new LoggerFactory();
-            Logger = factory.CreateLogger<MySqlDbContextDao>();
+            Logger = loggerFactory.CreateLogger<MySqlDbContextDao>();
+            ConnectionString = connectionString;
         }
 
-        public MySqlDbContextDao(string connectionString) : base(connectionString)
+        public MySqlDbContextDao(ILoggerFactory loggerFactory, IConnectionStringProvider connectionStringProvider)
         {
-            ILoggerFactory factory = new LoggerFactory();
-            Logger = factory.CreateLogger<MySqlDbContextDao>();
-        }
-
-        public MySqlDbContextDao(IConnectionStringProvider connectionStringProvider) : base(connectionStringProvider)
-        {
-            ILoggerFactory factory = new LoggerFactory();
-            Logger = factory.CreateLogger<MySqlDbContextDao>();
+            Logger = loggerFactory.CreateLogger<MySqlDbContextDao>();
+            ConnectionString = connectionStringProvider.GetConnectionString();
         }
         #endregion
 
         #region public
-        public override T ExecuteScalar<T>(string sql, DbParameter[] dbParameters = null, CommandType commandType = CommandType.Text, int commandTimeout = 400)
+        public T ExecuteScalar<T>(string sql, IList<DbParameter>? dbParameters = null, CommandType commandType = CommandType.Text, int commandTimeout = 400)
         {
-            T result = default;
+            T? result = default;
 
             using (MySqlConnection mysqlConnection = new MySqlConnection(ConnectionString))
             {
                 try
                 {
                     mysqlConnection.Open();
-                    MySqlCommand mySqlCommand = (MySqlCommand)CreateCommand(mysqlConnection, sql, commandType, commandTimeout);
-                    if (dbParameters != null)
+                    using (MySqlCommand mySqlCommand = (MySqlCommand)CreateCommand(mysqlConnection, sql, commandType, commandTimeout))
                     {
-                        mySqlCommand.Parameters.AddRange(dbParameters);
+                        mySqlCommand.Parameters.AddRange((Array)(dbParameters ?? Array.Empty<MySqlParameter>()));
+                        result = (T?)mySqlCommand.ExecuteScalar();
                     }
-                    result = (T)mySqlCommand.ExecuteScalar();
                 }
                 catch (Exception ex)
                 {
+#if DEBUG
                     Console.WriteLine(ex);
+#endif
                     Logger.LogError($@"{ex.Message}: {ex.StackTrace}");
-                }
-                finally
-                {
-                    mysqlConnection.Close();
+                    throw;
                 }
             }
 
@@ -64,49 +57,38 @@ namespace Common.Database.MySql
             return result;
         }
 
-        public override T ExecuteScalar<T>(string sql, IList<DbParameter> dbParameters = null, CommandType commandType = CommandType.Text, int commandTimeout = 400)
+        public IList<T>? ExecuteReader<T>(string sql, Func<IDataReader, IList<T>> func, IList<DbParameter>? dbParameters = null, CommandType commandType = CommandType.Text, int commandTimeout = 400)
         {
-            DbParameter[] dbParameterArray = dbParameters.ToArray();
-            return ExecuteScalar<T>(sql, dbParameterArray, commandType, commandTimeout);
-        }
-
-        public override IList<T> ExecuteReader<T>(string sql, Func<IDataReader, IList<T>> func, DbParameter[] dbParameters = null, CommandType commandType = CommandType.Text, int commandTimeout = 400)
-        {
-            IList<T> result = default;
+            IList<T>? result = default;
 
             using (MySqlConnection mysqlConnection = new MySqlConnection(ConnectionString))
             {
                 try
                 {
                     mysqlConnection.Open();
-                    MySqlCommand mySqlCommand = (MySqlCommand)CreateCommand(mysqlConnection, sql, commandType, commandTimeout);
-                    if (dbParameters != null)
+                    using (MySqlCommand mySqlCommand = (MySqlCommand)CreateCommand(mysqlConnection, sql, commandType, commandTimeout))
                     {
-                        mySqlCommand.Parameters.AddRange(dbParameters);
+                        mySqlCommand.Parameters.AddRange((Array)(dbParameters ?? Array.Empty<MySqlParameter>()));
+                        using (MySqlDataReader mySqlDataReader = mySqlCommand.ExecuteReader())
+                        {
+                            result = func(mySqlDataReader);
+                        }
                     }
-                    result = func(mySqlCommand.ExecuteReader());
                 }
                 catch (Exception ex)
                 {
+#if DEBUG
                     Console.WriteLine(ex);
+#endif
                     Logger.LogError($@"{ex.Message}: {ex.StackTrace}");
-                }
-                finally
-                {
-                    mysqlConnection.Close();
+                    throw;
                 }
             }
 
             return result;
         }
 
-        public override IList<T> ExecuteReader<T>(string sql, Func<IDataReader, IList<T>> func, IList<DbParameter> dbParameters = null, CommandType commandType = CommandType.Text, int commandTimeout = 400)
-        {
-            DbParameter[] dbParameterArray = dbParameters.ToArray();
-            return ExecuteReader<T>(sql, func, dbParameterArray, commandType, commandTimeout);
-        }
-
-        public override int ExecuteNonQuery(string sql, DbParameter[] dbParameters = null, CommandType commandType = CommandType.Text, int commandTimeout = 400)
+        public int ExecuteNonQuery(string sql, IList<DbParameter>? dbParameters = null, CommandType commandType = CommandType.Text, int commandTimeout = 400)
         {
             int result = 0;
 
@@ -115,53 +97,47 @@ namespace Common.Database.MySql
                 try
                 {
                     mysqlConnection.Open();
-                    MySqlCommand mySqlCommand = (MySqlCommand)CreateCommand(mysqlConnection, sql, commandType, commandTimeout);
-                    if (dbParameters != null)
+                    using (MySqlCommand mySqlCommand = (MySqlCommand)CreateCommand(mysqlConnection, sql, commandType, commandTimeout))
                     {
-                        mySqlCommand.Parameters.AddRange(dbParameters);
+                        mySqlCommand.Parameters.AddRange((Array)(dbParameters ?? Array.Empty<MySqlParameter>()));
+                        result = mySqlCommand.ExecuteNonQuery();
                     }
-                    result = mySqlCommand.ExecuteNonQuery();
                 }
                 catch (Exception ex)
                 {
+#if DEBUG
                     Console.WriteLine(ex);
+#endif
                     Logger.LogError($@"{ex.Message}: {ex.StackTrace}");
-                }
-                finally
-                {
-                    mysqlConnection.Close();
+                    throw;
                 }
             }
 
             return result;
         }
 
-        public override int ExecuteNonQuery(string sql, IList<DbParameter> dbParameters = null, CommandType commandType = CommandType.Text, int commandTimeout = 400)
-        {
-            DbParameter[] dbParameterArray = dbParameters.ToArray();
-            return ExecuteNonQuery(sql, dbParameterArray, commandType, commandTimeout);
-        }
-
-        public override DbCommand CreateCommand(DbConnection dbConnection, string sql, CommandType commandType, int commandTimeout)
+        public DbCommand CreateCommand(DbConnection dbConnection, string sql, CommandType commandType, int commandTimeout)
         {
             MySqlCommand mySqlCommand = new MySqlCommand(sql, (MySqlConnection)dbConnection);
             mySqlCommand.CommandType = commandType;
             mySqlCommand.CommandTimeout = commandTimeout;
             return mySqlCommand;
-
-            
         }
 
-        public override DbParameter CreateParameter(string name, object value, DbType dbType = DbType.String, ParameterDirection parameterDirection = ParameterDirection.Input)
+        public DbParameter CreateParameter(string name, object value, DbType dbType = DbType.String, ParameterDirection parameterDirection = ParameterDirection.Input)
         {
             string mysqlParameterName = FormatParameterName(name);
-            MySqlParameter mysSqlParameter = new MySqlParameter(mysqlParameterName, value);
-            mysSqlParameter.MySqlDbType = MySqlDbTypeResolver.ResolveDbType(dbType);
-            mysSqlParameter.Direction = parameterDirection;
+            MySqlParameter mysSqlParameter = new MySqlParameter(mysqlParameterName, value)
+            {
+                MySqlDbType = MySqlDbTypeResolver.ResolveDbType(dbType),
+                Direction = parameterDirection
+            };
             return mysSqlParameter;
         }
+        #endregion
 
-        public override string FormatParameterName(string name)
+        #region private
+        private string FormatParameterName(string name)
         {
             return $@":{name}";
         }

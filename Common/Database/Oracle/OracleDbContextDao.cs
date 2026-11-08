@@ -5,107 +5,99 @@ using Oracle.ManagedDataAccess.Client;
 
 namespace Common.Database.Oracle
 {
-    public class OracleDbContextDao : AbstractDbContextDao
+    public class OracleDbContextDao : IDbContextDaoSync, IDbContextDaoCommand, IDbContextDaoParameter
     {
         #region prop
-        private ILogger Logger;
+        private readonly string ConnectionString;
+        private readonly ILogger Logger;
         #endregion
 
         #region ctor
-        public OracleDbContextDao() : base()
+        public OracleDbContextDao(ILoggerFactory loggerFactory, string connectionString)
         {
-            ILoggerFactory factory = new LoggerFactory();
-            Logger = factory.CreateLogger<OracleDbContextDao>();
+            Logger = loggerFactory.CreateLogger<OracleDbContextDao>();
+            ConnectionString = connectionString;
         }
 
-        public OracleDbContextDao(string connectionString) : base(connectionString)
+        public OracleDbContextDao(ILoggerFactory loggerFactory, IConnectionStringProvider connectionStringProvider)
         {
-            ILoggerFactory factory = new LoggerFactory();
-            Logger = factory.CreateLogger<OracleDbContextDao>();
-        }
-
-        public OracleDbContextDao(IConnectionStringProvider connectionStringProvider) : base(connectionStringProvider)
-        {
-            ILoggerFactory factory = new LoggerFactory();
-            Logger = factory.CreateLogger<OracleDbContextDao>();
+            Logger = loggerFactory.CreateLogger<OracleDbContextDao>();
+            ConnectionString = connectionStringProvider.GetConnectionString();
         }
         #endregion
 
         #region public
-        public override T ExecuteScalar<T>(string sql, DbParameter[] dbParameters = null, CommandType commandType = CommandType.Text, int commandTimeout = 400)
+        public T ExecuteScalar<T>(string sql, DbParameter[]? dbParameters = null, CommandType commandType = CommandType.Text, int commandTimeout = 400)
         {
-            T result = default;
+            T? result = default;
 
             using (OracleConnection oracleConnection = new OracleConnection(ConnectionString))
             {
                 try
                 {
                     oracleConnection.Open();
-                    OracleCommand oracleCommand = (OracleCommand)CreateCommand(oracleConnection, sql, commandType, commandTimeout);
-                    if (dbParameters != null)
+                    using(OracleCommand oracleCommand = (OracleCommand)CreateCommand(oracleConnection, sql, commandType, commandTimeout))
                     {
-                        oracleCommand.Parameters.AddRange(dbParameters);
+                        oracleCommand.Parameters.AddRange(dbParameters ?? Array.Empty<OracleParameter>());
+                        result = (T?)oracleCommand.ExecuteScalar();
                     }
-                    result = (T)oracleCommand.ExecuteScalar();
                 }
                 catch (Exception ex)
                 {
+#if DEBUG
                     Console.WriteLine(ex);
+#endif
                     Logger.LogError($@"{ex.Message}: {ex.StackTrace}");
-                }
-                finally
-                {
-                    oracleConnection.Close();
+                    throw;
                 }
             }
-
 
             return result;
         }
 
-        public override T ExecuteScalar<T>(string sql, IList<DbParameter> dbParameters = null, CommandType commandType = CommandType.Text, int commandTimeout = 400)
+        public T ExecuteScalar<T>(string sql, IList<DbParameter>? dbParameters = null, CommandType commandType = CommandType.Text, int commandTimeout = 400)
         {
-            DbParameter[] dbParameterArray = dbParameters.ToArray();
+            DbParameter[]? dbParameterArray = dbParameters?.ToArray();
             return ExecuteScalar<T>(sql, dbParameterArray, commandType, commandTimeout);
         }
 
-        public override IList<T> ExecuteReader<T>(string sql, Func<IDataReader, IList<T>> func, DbParameter[] dbParameters = null, CommandType commandType = CommandType.Text, int commandTimeout = 400)
+        public IList<T> ExecuteReader<T>(string sql, Func<IDataReader, IList<T>> func, DbParameter[]? dbParameters = null, CommandType commandType = CommandType.Text, int commandTimeout = 400)
         {
-            IList<T> result = default;
+            IList<T>? result = default;
 
             using (OracleConnection oracleConnection = new OracleConnection(ConnectionString))
             {
                 try
                 {
                     oracleConnection.Open();
-                    OracleCommand oracleCommand = (OracleCommand)CreateCommand(oracleConnection, sql, commandType, commandTimeout);
-                    if (dbParameters != null)
+                    using (OracleCommand oracleCommand = (OracleCommand)CreateCommand(oracleConnection, sql, commandType, commandTimeout))
                     {
-                        oracleCommand.Parameters.AddRange(dbParameters);
-                    }
-                    result = func(oracleCommand.ExecuteReader());
+                        oracleCommand.Parameters.AddRange(dbParameters ?? Array.Empty<OracleParameter>());
+                        using(OracleDataReader oracleDataReader = oracleCommand.ExecuteReader())
+                        {
+                            result = func(oracleDataReader);
+                        }                    }
                 }
                 catch (Exception ex)
                 {
+#if DEBUG
                     Console.WriteLine(ex);
+#endif
                     Logger.LogError($@"{ex.Message}: {ex.StackTrace}");
-                }
-                finally
-                {
-                    oracleConnection.Close();
+                    throw;
                 }
             }
 
             return result;
         }
 
-        public override IList<T> ExecuteReader<T>(string sql, Func<IDataReader, IList<T>> func, IList<DbParameter> dbParameters = null, CommandType commandType = CommandType.Text, int commandTimeout = 400)
+        public IList<T> ExecuteReader<T>(string sql, Func<IDataReader, IList<T>> func, IList<DbParameter>? dbParameters = null, CommandType commandType = CommandType.Text, int commandTimeout = 400)
         {
-            DbParameter[] dbParameterArray = dbParameters.ToArray();
+            DbParameter[]? dbParameterArray = dbParameters?.ToArray();
             return ExecuteReader(sql, func, dbParameterArray, commandType, commandTimeout);
         }
 
-        public override int ExecuteNonQuery(string sql, DbParameter[] dbParameters = null, CommandType commandType = CommandType.Text, int commandTimeout = 400)
+        public int ExecuteNonQuery(string sql, IList<DbParameter>? dbParameters = null, CommandType commandType = CommandType.Text, int commandTimeout = 400)
         {
             int result = 0;
 
@@ -114,34 +106,26 @@ namespace Common.Database.Oracle
                 try
                 {
                     oracleConnection.Open();
-                    OracleCommand oracleCommand = (OracleCommand)CreateCommand(oracleConnection, sql, commandType, commandTimeout);
-                    if (dbParameters != null)
+                    using (OracleCommand oracleCommand = (OracleCommand)CreateCommand(oracleConnection, sql, commandType, commandTimeout))
                     {
-                        oracleCommand.Parameters.AddRange(dbParameters);
+                        oracleCommand.Parameters.AddRange((Array)(dbParameters ?? Array.Empty<OracleParameter>()));
+                        result = oracleCommand.ExecuteNonQuery();
                     }
-                    result = oracleCommand.ExecuteNonQuery();
                 }
                 catch (Exception ex)
                 {
+#if DEBUG
                     Console.WriteLine(ex);
+#endif
                     Logger.LogError($@"{ex.Message}: {ex.StackTrace}");
-                }
-                finally
-                {
-                    oracleConnection.Close();
+                    throw;
                 }
             }
 
             return result;
         }
 
-        public override int ExecuteNonQuery(string sql, IList<DbParameter> dbParameters = null, CommandType commandType = CommandType.Text, int commandTimeout = 400)
-        {
-            DbParameter[] dbParameterArray = dbParameters.ToArray();
-            return ExecuteNonQuery(sql, dbParameterArray, commandType, commandTimeout);
-        }
-
-        public override DbCommand CreateCommand(DbConnection dbConnection, string sql, CommandType commandType, int commandTimeout)
+        public DbCommand CreateCommand(DbConnection dbConnection, string sql, CommandType commandType, int commandTimeout)
         {
             OracleCommand oracleCommand = new OracleCommand(sql, (OracleConnection)dbConnection);
             oracleCommand.CommandType = commandType;
@@ -149,16 +133,20 @@ namespace Common.Database.Oracle
             return oracleCommand;
         }
 
-        public override DbParameter CreateParameter(string name, object value, DbType dbType = DbType.String, ParameterDirection parameterDirection = ParameterDirection.Input)
+        public DbParameter CreateParameter(string name, object value, DbType dbType = DbType.String, ParameterDirection parameterDirection = ParameterDirection.Input)
         {
             string oracleParameterName = FormatParameterName(name);
-            OracleParameter oracleParameter = new OracleParameter(oracleParameterName, value);
-            oracleParameter.OracleDbType = OracleDbTypeResolver.ResolveDbType(dbType);
-            oracleParameter.Direction = parameterDirection;
+            OracleParameter oracleParameter = new OracleParameter(oracleParameterName, value)
+            {
+                OracleDbType = OracleDbTypeResolver.ResolveDbType(dbType),
+                Direction = parameterDirection
+            };
             return oracleParameter;
         }
+        #endregion
 
-        public override string FormatParameterName(string name)
+        #region private
+        private string FormatParameterName(string name)
         {
             return $@":{name}";
         }

@@ -1,111 +1,92 @@
-﻿using System.Data;
-using System.Data.Common;
-using System.Data.SqlClient;
+﻿using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Logging;
+using System.Data;
+using System.Data.Common;
 
 namespace Common.Database.Sql
 {
-    public class SqlDbContextDao : AbstractDbContextDao
+    public class SqlDbContextDao : IDbContextDao, IDbContextDaoCommand, IDbContextDaoParameter
     {
         #region prop
-        private ILogger Logger;
+        private readonly string ConnectionString;
+        private readonly ILogger Logger;
         #endregion
 
         #region ctor
-        public SqlDbContextDao() : base() 
+        public SqlDbContextDao(ILoggerFactory loggerFactory, string connectionString) 
         {
-            ILoggerFactory factory = new LoggerFactory();
-            Logger = factory.CreateLogger<SqlDbContextDao>();
+            Logger = loggerFactory.CreateLogger<SqlDbContextDao>();
+            ConnectionString = connectionString;
         }
 
-        public SqlDbContextDao(string connectionString) : base(connectionString) 
+        public SqlDbContextDao(ILoggerFactory loggerFactory, IConnectionStringProvider connectionStringProvider)
         {
-            ILoggerFactory factory = new LoggerFactory();
-            Logger = factory.CreateLogger<SqlDbContextDao>();
-        }
-
-        public SqlDbContextDao(IConnectionStringProvider connectionStringProvider) : base(connectionStringProvider) 
-        {
-            ILoggerFactory factory = new LoggerFactory();
-            Logger = factory.CreateLogger<SqlDbContextDao>();
+            Logger = loggerFactory.CreateLogger<SqlDbContextDao>();
+            ConnectionString = connectionStringProvider.GetConnectionString();
         }
         #endregion
 
         #region public
-        public override T ExecuteScalar<T>(string sql, DbParameter[] dbParameters = null, CommandType commandType = CommandType.Text, int commandTimeout = 400)
+        public T ExecuteScalar<T>(string sql, IList<DbParameter>? dbParameters = null, CommandType commandType = CommandType.Text, int commandTimeout = 400)
         {
-            T result = default;
+            T? result = default;
 
             using (SqlConnection sqlConnection = new SqlConnection(ConnectionString))
             {
                 try
                 {
                     sqlConnection.Open();
-                    SqlCommand sqlCommand = (SqlCommand)CreateCommand(sqlConnection, sql, commandType, commandTimeout);
-                    if (dbParameters != null)
+                    using (SqlCommand sqlCommand = (SqlCommand)CreateCommand(sqlConnection, sql, commandType, commandTimeout))
                     {
-                        sqlCommand.Parameters.AddRange(dbParameters);
+                        sqlCommand.Parameters.AddRange((SqlParameter[])(dbParameters ?? Array.Empty<SqlParameter>()));
+                        result = (T?)sqlCommand.ExecuteScalar();
                     }
-                    result = (T)sqlCommand.ExecuteScalar();
                 }
                 catch (Exception ex)
                 {
+#if DEBUG
                     Console.WriteLine(ex);
+#endif
                     Logger.LogError($@"{ex.Message}: {ex.StackTrace}");
-                }
-                finally
-                {
-                    sqlConnection.Close();
+                    throw;
                 }
             }
-
 
             return result;
         }
 
-        public override T ExecuteScalar<T>(string sql, IList<DbParameter> dbParameters = null, CommandType commandType = CommandType.Text, int commandTimeout = 400)
+        public IList<T> ExecuteReader<T>(string sql, Func<IDataReader, IList<T>> func, IList<DbParameter>? dbParameters = null, CommandType commandType = CommandType.Text, int commandTimeout = 400)
         {
-            DbParameter[] dbParameterArray = dbParameters.ToArray();
-            return ExecuteScalar<T>(sql, dbParameterArray, commandType, commandTimeout);
-        }
-
-        public override IList<T> ExecuteReader<T>(string sql, Func<IDataReader, IList<T>> func, DbParameter[] dbParameters = null, CommandType commandType = CommandType.Text, int commandTimeout = 400)
-        {
-            IList<T> result = default;
+            IList<T>? result = default;
 
             using (SqlConnection sqlConnection = new SqlConnection(ConnectionString))
             {
                 try
                 {
                     sqlConnection.Open();
-                    SqlCommand sqlCommand = (SqlCommand)CreateCommand(sqlConnection, sql, commandType, commandTimeout);
-                    if (dbParameters != null)
+                    using (SqlCommand sqlCommand = (SqlCommand)CreateCommand(sqlConnection, sql, commandType, commandTimeout))
                     {
-                        sqlCommand.Parameters.AddRange(dbParameters);
+                        sqlCommand.Parameters.AddRange((SqlParameter[])(dbParameters ?? Array.Empty<SqlParameter>()));
+                        using (SqlDataReader sqlDataReader = sqlCommand.ExecuteReader())
+                        {
+                            result = func(sqlDataReader);
+                        }
                     }
-                    result = func(sqlCommand.ExecuteReader());
                 }
                 catch (Exception ex)
                 {
+#if DEBUG
                     Console.WriteLine(ex);
+#endif
                     Logger.LogError($@"{ex.Message}: {ex.StackTrace}");
-                }
-                finally
-                {
-                    sqlConnection.Close();
+                    throw;
                 }
             }
 
             return result;
         }
 
-        public override IList<T> ExecuteReader<T>(string sql, Func<IDataReader, IList<T>> func, IList<DbParameter> dbParameters = null, CommandType commandType = CommandType.Text, int commandTimeout = 400)
-        {
-            DbParameter[] dbParameterArray = dbParameters.ToArray();
-            return ExecuteReader(sql, func, dbParameterArray, commandType, commandTimeout);
-        }
-
-        public override int ExecuteNonQuery(string sql, DbParameter[] dbParameters = null, CommandType commandType = CommandType.Text, int commandTimeout = 400)
+        public int ExecuteNonQuery(string sql, IList<DbParameter>? dbParameters = null, CommandType commandType = CommandType.Text, int commandTimeout = 400)
         {
             int result = 0;
 
@@ -114,34 +95,113 @@ namespace Common.Database.Sql
                 try
                 {
                     sqlConnection.Open();
-                    SqlCommand sqlCommand = (SqlCommand)CreateCommand(sqlConnection, sql, commandType, commandTimeout);
-                    if (dbParameters != null)
+                    using (SqlCommand sqlCommand = (SqlCommand)CreateCommand(sqlConnection, sql, commandType, commandTimeout))
                     {
-                        sqlCommand.Parameters.AddRange(dbParameters);
+                        sqlCommand.Parameters.AddRange((SqlParameter[])(dbParameters ?? Array.Empty<SqlParameter>()));
+                        result = sqlCommand.ExecuteNonQuery();
                     }
-                    result = sqlCommand.ExecuteNonQuery();
                 }
                 catch (Exception ex)
                 {
+#if DEBUG
                     Console.WriteLine(ex);
+#endif
                     Logger.LogError($@"{ex.Message}: {ex.StackTrace}");
-                }
-                finally
-                {
-                    sqlConnection.Close();
+                    throw;
                 }
             }
 
             return result;
         }
 
-        public override int ExecuteNonQuery(string sql, IList<DbParameter> dbParameters = null, CommandType commandType = CommandType.Text, int commandTimeout = 400)
+        public async Task<T> ExecuteScalarAsync<T>(CancellationToken cancellationToken, string sql, IList<DbParameter>? dbParameters = null, CommandType commandType = CommandType.Text, int commandTimeout = 400)
         {
-            DbParameter[] dbParameterArray = dbParameters.ToArray();
-            return ExecuteNonQuery(sql, dbParameterArray, commandType, commandTimeout);
+            T? result = default;
+
+            using (SqlConnection sqlConnection = new SqlConnection(ConnectionString))
+            {
+                try
+                {
+                    await sqlConnection.OpenAsync(cancellationToken);
+                    using (SqlCommand sqlCommand = (SqlCommand)CreateCommand(sqlConnection, sql, commandType, commandTimeout))
+                    {
+                        sqlCommand.Parameters.AddRange((SqlParameter[])(dbParameters ?? Array.Empty<SqlParameter>()));
+                        result = (T?)(await sqlCommand.ExecuteScalarAsync(cancellationToken));
+                    }
+                }
+                catch (Exception ex)
+                {
+#if DEBUG
+                    Console.WriteLine(ex);
+#endif
+                    Logger.LogError($@"{ex.Message}: {ex.StackTrace}");
+                    throw;
+                }
+            }
+
+            return result;
         }
 
-        public override DbCommand CreateCommand(DbConnection dbConnection, string sql, CommandType commandType, int commandTimeout)
+        public async Task<IList<T>> ExecuteReaderAsync<T>(CancellationToken cancellationToken, string sql, Func<IDataReader, IList<T>> func, IList<DbParameter>? dbParameters = null, CommandType commandType = CommandType.Text, int commandTimeout = 400)
+        {
+            IList<T>? result = default;
+
+            using (SqlConnection sqlConnection = new SqlConnection(ConnectionString))
+            {
+                try
+                {
+                    await sqlConnection.OpenAsync(cancellationToken);
+                    using (SqlCommand sqlCommand = (SqlCommand)CreateCommand(sqlConnection, sql, commandType, commandTimeout))
+                    {
+                        sqlCommand.Parameters.AddRange((SqlParameter[])(dbParameters ?? Array.Empty<SqlParameter>()));
+                        using (SqlDataReader sqlDataReader = await sqlCommand.ExecuteReaderAsync(cancellationToken))
+                        {
+                            result = func(sqlDataReader);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+#if DEBUG
+                    Console.WriteLine(ex);
+#endif
+                    Logger.LogError($@"{ex.Message}: {ex.StackTrace}");
+                    throw;
+                }
+            }
+
+            return result;
+        }
+
+        public async Task<int> ExecuteNonQueryAsync(CancellationToken cancellationToken, string sql, IList<DbParameter>? dbParameters = null, CommandType commandType = CommandType.Text, int commandTimeout = 400)
+        {
+            int result = 0;
+
+            using (SqlConnection sqlConnection = new SqlConnection(ConnectionString))
+            {
+                try
+                {
+                    await sqlConnection.OpenAsync(cancellationToken);
+                    using (SqlCommand sqlCommand = (SqlCommand)CreateCommand(sqlConnection, sql, commandType, commandTimeout))
+                    {
+                        sqlCommand.Parameters.AddRange((SqlParameter[])(dbParameters ?? Array.Empty<SqlParameter>()));
+                        result = await sqlCommand.ExecuteNonQueryAsync(cancellationToken);
+                    }
+                }
+                catch (Exception ex)
+                {
+#if DEBUG
+                    Console.WriteLine(ex);
+#endif
+                    Logger.LogError($@"{ex.Message}: {ex.StackTrace}");
+                    throw;
+                }
+            }
+
+            return result;
+        }
+
+        public DbCommand CreateCommand(DbConnection dbConnection, string sql, CommandType commandType, int commandTimeout)
         {
             SqlCommand sqlCommand = new SqlCommand(sql, (SqlConnection)dbConnection);
             sqlCommand.CommandType = commandType;
@@ -149,16 +209,21 @@ namespace Common.Database.Sql
             return sqlCommand;
         }
 
-        public override DbParameter CreateParameter(string name, object value, DbType dbType = DbType.String, ParameterDirection parameterDirection = ParameterDirection.Input)
+        public DbParameter CreateParameter(string name, object value, DbType dbType = DbType.String, ParameterDirection parameterDirection = ParameterDirection.Input)
         {
             string sqlParameterName = FormatParameterName(name);
-            SqlParameter sqlParameter = new SqlParameter(sqlParameterName, value);
-            sqlParameter.SqlDbType = SqlDbTypeResolver.ResolveDbType(dbType);
-            sqlParameter.Direction = parameterDirection;
+            SqlParameter sqlParameter = new SqlParameter(sqlParameterName, value)
+            {
+                SqlDbType = SqlDbTypeResolver.ResolveDbType(dbType),
+                Direction = parameterDirection
+            };
             return sqlParameter;
         }
+        #endregion
 
-        public override string FormatParameterName(string name) {
+        #region private
+        private string FormatParameterName(string name)
+        {
             return $@"@{name}";
         }
         #endregion

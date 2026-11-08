@@ -1,113 +1,92 @@
-﻿using System.Data;
-using System.Data.Common;
-using Common.Database.Oracle;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Npgsql;
-using NpgsqlTypes;
+using System.Data;
+using System.Data.Common;
 
 namespace Common.Database.Postgres
 {
-    public class PostgresDbContextDao : AbstractDbContextDao
+    public class PostgresDbContextDao : IDbContextDaoSync, IDbContextDaoCommand, IDbContextDaoParameter
     {
         #region prop
-        private ILogger Logger;
+        private readonly string ConnectionString;
+        private readonly ILogger Logger;
         #endregion
 
         #region ctor
-        public PostgresDbContextDao() : base()
+        public PostgresDbContextDao(ILoggerFactory loggerFactory, string connectionString)
         {
-            ILoggerFactory factory = new LoggerFactory();
-            Logger = factory.CreateLogger<PostgresDbContextDao>();
+            Logger = loggerFactory.CreateLogger<PostgresDbContextDao>();
+            ConnectionString = connectionString;
         }
 
-        public PostgresDbContextDao(string connectionString) : base(connectionString)
+        public PostgresDbContextDao(ILoggerFactory loggerFactory, IConnectionStringProvider connectionStringProvider)
         {
-            ILoggerFactory factory = new LoggerFactory();
-            Logger = factory.CreateLogger<PostgresDbContextDao>();
-        }
-
-        public PostgresDbContextDao(IConnectionStringProvider connectionStringProvider) : base(connectionStringProvider)
-        {
-            ILoggerFactory factory = new LoggerFactory();
-            Logger = factory.CreateLogger<PostgresDbContextDao>();
+            Logger = loggerFactory.CreateLogger<PostgresDbContextDao>();
+            ConnectionString = connectionStringProvider.GetConnectionString();
         }
         #endregion
 
         #region public
-        public override T ExecuteScalar<T>(string sql, DbParameter[] dbParameters = null, CommandType commandType = CommandType.Text, int commandTimeout = 400)
+        public T ExecuteScalar<T>(string sql, IList<DbParameter>? dbParameters = null, CommandType commandType = CommandType.Text, int commandTimeout = 400)
         {
-            T result = default;
+            T? result = default;
 
             using (NpgsqlConnection npgsqlConnection = new NpgsqlConnection(ConnectionString))
             {
                 try
                 {
                     npgsqlConnection.Open();
-                    NpgsqlCommand npgsqlCommand = (NpgsqlCommand)CreateCommand(npgsqlConnection, sql, commandType, commandTimeout);
-                    if (dbParameters != null)
+                    using (NpgsqlCommand npgsqlCommand = (NpgsqlCommand)CreateCommand(npgsqlConnection, sql, commandType, commandTimeout))
                     {
-                        npgsqlCommand.Parameters.AddRange(dbParameters);
+                        npgsqlCommand.Parameters.AddRange((Array)(dbParameters ?? Array.Empty<NpgsqlParameter>()));
+                        result = (T?)npgsqlCommand.ExecuteScalar();
                     }
-                    result = (T)npgsqlCommand.ExecuteScalar();
                 }
                 catch (Exception ex)
                 {
+#if DEBUG
                     Console.WriteLine(ex);
+#endif
                     Logger.LogError($@"{ex.Message}: {ex.StackTrace}");
-                }
-                finally
-                {
-                    npgsqlConnection.Close();
+                    throw;
                 }
             }
-
 
             return result;
         }
 
-        public override T ExecuteScalar<T>(string sql, IList<DbParameter> dbParameters = null, CommandType commandType = CommandType.Text, int commandTimeout = 400)
+        public IList<T> ExecuteReader<T>(string sql, Func<IDataReader, IList<T>> func, IList<DbParameter>? dbParameters = null, CommandType commandType = CommandType.Text, int commandTimeout = 400)
         {
-            DbParameter[] dbParameterArray = dbParameters.ToArray();
-            return ExecuteScalar<T>(sql, dbParameterArray, commandType, commandTimeout);
-        }
-
-        public override IList<T> ExecuteReader<T>(string sql, Func<IDataReader, IList<T>> func, DbParameter[] dbParameters = null, CommandType commandType = CommandType.Text, int commandTimeout = 400)
-        {
-            IList<T> result = default;
+            IList<T>? result = default;
 
             using (NpgsqlConnection npgsqlConnection = new NpgsqlConnection(ConnectionString))
             {
                 try
                 {
                     npgsqlConnection.Open();
-                    NpgsqlCommand npgsqlCommand = (NpgsqlCommand)CreateCommand(npgsqlConnection, sql, commandType, commandTimeout);
-                    if (dbParameters != null)
+                    using (NpgsqlCommand npgsqlCommand = (NpgsqlCommand)CreateCommand(npgsqlConnection, sql, commandType, commandTimeout))
                     {
-                        npgsqlCommand.Parameters.AddRange(dbParameters);
+                        npgsqlCommand.Parameters.AddRange((Array)(dbParameters ?? Array.Empty<NpgsqlParameter>()));
+                        using (NpgsqlDataReader npgsqlDataReader = npgsqlCommand.ExecuteReader())
+                        {
+                            result = func(npgsqlDataReader);
+                        }
                     }
-                    result = func(npgsqlCommand.ExecuteReader());
                 }
                 catch (Exception ex)
                 {
+#if DEBUG
                     Console.WriteLine(ex);
+#endif
                     Logger.LogError($@"{ex.Message}: {ex.StackTrace}");
-                }
-                finally
-                {
-                    npgsqlConnection.Close();
+                    throw;
                 }
             }
 
             return result;
         }
 
-        public override IList<T> ExecuteReader<T>(string sql, Func<IDataReader, IList<T>> func, IList<DbParameter> dbParameters = null, CommandType commandType = CommandType.Text, int commandTimeout = 400)
-        {
-            DbParameter[] dbParameterArray = dbParameters.ToArray();
-            return ExecuteReader(sql, func, dbParameterArray, commandType, commandTimeout);
-        }
-
-        public override int ExecuteNonQuery(string sql, DbParameter[] dbParameters = null, CommandType commandType = CommandType.Text, int commandTimeout = 400)
+        public int ExecuteNonQuery(string sql, IList<DbParameter>? dbParameters = null, CommandType commandType = CommandType.Text, int commandTimeout = 400)
         {
             int result = 0;
 
@@ -116,34 +95,26 @@ namespace Common.Database.Postgres
                 try
                 {
                     npgsqlConnection.Open();
-                    NpgsqlCommand npgsqlCommand = (NpgsqlCommand)CreateCommand(npgsqlConnection,sql, commandType, commandTimeout);
-                    if (dbParameters != null)
+                    using (NpgsqlCommand npgsqlCommand = (NpgsqlCommand)CreateCommand(npgsqlConnection, sql, commandType, commandTimeout))
                     {
-                        npgsqlCommand.Parameters.AddRange(dbParameters);
+                        npgsqlCommand.Parameters.AddRange((Array)(dbParameters ?? Array.Empty<NpgsqlParameter>()));
+                        result = npgsqlCommand.ExecuteNonQuery();
                     }
-                    result = npgsqlCommand.ExecuteNonQuery();
                 }
                 catch (Exception ex)
                 {
+#if DEBUG
                     Console.WriteLine(ex);
+#endif
                     Logger.LogError($@"{ex.Message}: {ex.StackTrace}");
-                }
-                finally
-                {
-                    npgsqlConnection.Close();
+                    throw;
                 }
             }
 
             return result;
         }
 
-        public override int ExecuteNonQuery(string sql, IList<DbParameter> dbParameters = null, CommandType commandType = CommandType.Text, int commandTimeout = 400)
-        {
-            DbParameter[] dbParameterArray = dbParameters.ToArray();
-            return ExecuteNonQuery(sql, dbParameterArray, commandType, commandTimeout);
-        }
-
-        public override DbCommand CreateCommand(DbConnection dbConnection, string sql, CommandType commandType, int commandTimeout)
+        public DbCommand CreateCommand(DbConnection dbConnection, string sql, CommandType commandType, int commandTimeout)
         {
             NpgsqlCommand npgsqlCommand = new NpgsqlCommand(sql, (NpgsqlConnection)dbConnection);
             npgsqlCommand.CommandType = commandType;
@@ -151,16 +122,20 @@ namespace Common.Database.Postgres
             return npgsqlCommand;
         }
 
-        public override DbParameter CreateParameter(string name, object value, DbType dbType = DbType.String, ParameterDirection parameterDirection = ParameterDirection.Input)
+        public DbParameter CreateParameter(string name, object value, DbType dbType = DbType.String, ParameterDirection parameterDirection = ParameterDirection.Input)
         {
             string npgsqlParameterName = FormatParameterName(name);
-            NpgsqlParameter npgsqlParameter = new NpgsqlParameter(npgsqlParameterName, value);
-            npgsqlParameter.NpgsqlDbType = PostgresDbTypeResolver.ResolveDbType(dbType);
-            npgsqlParameter.Direction = parameterDirection;
+            NpgsqlParameter npgsqlParameter = new NpgsqlParameter(npgsqlParameterName, value)
+            {
+                NpgsqlDbType = PostgresDbTypeResolver.ResolveDbType(dbType),
+                Direction = parameterDirection
+            };
             return npgsqlParameter;
         }
+        #endregion
 
-        public override string FormatParameterName(string name)
+        #region private
+        private string FormatParameterName(string name)
         {
             return $@"@{name}";
         }
